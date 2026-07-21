@@ -1,142 +1,189 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: Arial, Helvetica, sans-serif;
+}
+
+:root {
+    --bg: #0F2A1A;
+    --canvas-bg: #1A3A2A;
+    --snake: #44FFAA;
+    --food: #FFEE66;
+    --accent: #22FFCC;
+    --btn-primary: #00E699;
+    --btn-secondary: #FFBB33;
+    --text: #E8FFEE;
+    --text-muted: #B0E0C8;
 }
 
 body {
+    font-family: 'Press Start 2P', system-ui, sans-serif;
+    color: var(--text);
     min-height: 100vh;
-    background: linear-gradient(135deg, #1e293b, #0f172a);
-    color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 20px;
+    
+    /* ✅ IMAGEN DE FONDO AGREGADA */
+    background-image: 
+        url('serpiente.jpg'),
+        radial-gradient(circle at 25% 30%, rgba(68, 255, 170, 0.12) 0%, transparent 100%),
+        radial-gradient(circle at 75% 70%, rgba(255, 238, 102, 0.08) 0%, transparent 100%);
+    
+    background-size: cover;           /* La imagen cubre toda la pantalla */
+    background-position: center;      /* Centra la imagen */
+    background-repeat: no-repeat;     /* No repetir la imagen */
+    background-attachment: fixed;     /* La imagen no se mueve al hacer scroll */
+    background-blend-mode: overlay;   /* Mezcla la imagen con los gradientes */
 }
 
 .contenedor-juego {
     width: 100%;
     max-width: 720px;
-    background: #111827;
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    background: rgba(36, 192, 59, 0.671);
+    border: 6px solid var(--accent);
+    border-radius: 24px;
+    padding: 28px 20px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6),
+                inset 0 0 80px rgba(68, 255, 170, 0.12);
     text-align: center;
 }
 
 h1 {
-    margin-bottom: 10px;
-    font-size: 32px;
-    color: #22c55e;
+    font-size: 2.4rem;
+    margin-bottom: 12px;
+    background: orange;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 20px rgba(232, 144, 21, 0.979);
+    letter-spacing: 2px;
 }
 
 .descripcion {
-    margin-bottom: 18px;
-    color: #cbd5e1;
-    line-height: 1.5;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    font-size: 0.95rem;
+    line-height: 1.4;
 }
 
 .panel-info {
     display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 16px;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 24px;
     flex-wrap: wrap;
 }
 
 .tarjeta-info {
-    flex: 1;
-    min-width: 150px;
-    background: #1f2937;
-    padding: 14px;
-    border-radius: 14px;
-    border: 1px solid #374151;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 14px 28px;
+    border-radius: 16px;
+    border: 3px solid var(--accent);
+    min-width: 160px;
 }
 
 .tarjeta-info span {
     display: block;
-    font-size: 14px;
-    color: #94a3b8;
-    margin-bottom: 4px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 6px;
 }
 
 .tarjeta-info strong {
-    font-size: 24px;
-    color: #facc15;
+    font-size: 2rem;
+    color: var(--food);
+    text-shadow: 0 0 12px var(--food);
 }
 
 canvas {
     width: 100%;
-    max-width: 500px;
-    background: #020617;
-    border: 4px solid #22c55e;
+    max-width: 520px;
+    background: rgba(243, 235, 226, 0.68);
+    border: 8px solid var(--accent);
     border-radius: 16px;
     display: block;
-    margin: 0 auto 20px auto;
+    margin: 14px auto;
+    image-rendering: pixelated;
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.242);
 }
 
+/* Botones tipo almohadilla */
 .controles {
     display: grid;
-    grid-template-columns: repeat(3, 90px);
-    gap: 10px;
+    grid-template-columns: repeat(3, 82px);
+    gap: 12px;
     justify-content: center;
-    align-items: center;
-    margin-bottom: 18px;
+    margin: 24px 0;
 }
 
-.controles button,
-.acciones button {
+.controles button {
+    height: 74px;
+    width: 74px;
     border: none;
-    border-radius: 12px;
-    padding: 12px 16px;
-    background: #22c55e;
-    color: #052e16;
+    border-radius: 20px;
+    font-size: 1.8rem;
     font-weight: bold;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.12s ease;
+    box-shadow: 0 8px 0 #006f5c;
+    background: var(--btn-primary);
+    color: #052e16;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.controles button:hover,
-.acciones button:hover {
-    transform: scale(1.05);
-    background: #86efac;
+.controles button:active {
+    transform: translateY(6px);
+    box-shadow: 0 2px 0 #006f5c;
 }
 
-.vacio {
-    visibility: hidden;
+.vacio { 
+    visibility: hidden; 
 }
 
 .acciones {
     display: flex;
     justify-content: center;
-    gap: 12px;
+    gap: 16px;
     flex-wrap: wrap;
+    margin-top: 10px;
 }
 
-.acciones .secundario {
-    background: #38bdf8;
-    color: #082f49;
-}
-
-.mensaje {
-    margin-top: 14px;
-    color: #e2e8f0;
-    min-height: 24px;
+.acciones button {
+    padding: 14px 32px;
+    font-size: 1rem;
+    border-radius: 14px;
+    box-shadow: 0 6px 0 #c97a00;
+    background: var(--btn-secondary);
+    color: #3d2a00;
     font-weight: bold;
+    cursor: pointer;
+    transition: all 0.12s ease;
 }
 
-@media (max-width: 520px) {
+.acciones button:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #c97a00;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .contenedor-juego {
+        padding: 20px 15px;
+    }
     h1 {
-        font-size: 24px;
+        font-size: 1.9rem;
     }
-
     .controles {
-        grid-template-columns: repeat(3, 75px);
+        grid-template-columns: repeat(3, 68px);
     }
-
-    .controles button,
-    .acciones button {
-        padding: 10px;
+    .controles button {
+        height: 62px;
+        width: 62px;
+        font-size: 1.6rem;
     }
 }
