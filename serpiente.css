@@ -43,7 +43,7 @@ body {
 .contenedor-juego {
     width: 100%;
     max-width: 720px;
-    background: rgba(36, 192, 59, 0.671);
+    background: rgba(36, 109, 192, 0.919);
     border: 6px solid var(--accent);
     border-radius: 24px;
     padding: 28px 20px;
@@ -101,7 +101,7 @@ h1 {
 canvas {
     width: 100%;
     max-width: 520px;
-    background: rgba(243, 235, 226, 0.68);
+    background: whitesmoke;
     border: 8px solid var(--accent);
     border-radius: 16px;
     display: block;
