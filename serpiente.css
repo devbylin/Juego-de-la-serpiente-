@@ -56,7 +56,7 @@ h1 {
     font-size: 2.4rem;
     margin-bottom: 12px;
     background: orange;
-    -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     text-shadow: 0 0 20px rgba(232, 144, 21, 0.979);
     letter-spacing: 2px;
