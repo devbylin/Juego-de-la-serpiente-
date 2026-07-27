@@ -11,10 +11,7 @@ const serpiente = [
   {x:9, y:8},
   {x:8, y:8}
 ];
-let comida = {
-  x: 10,
-  y: 10
-}
+let comida = {x: 10, y: 10};
 let intervaloSerpiente = null;
 let juegoActivo = false;
 let direccionActual = "derecha";
@@ -22,8 +19,10 @@ let puntaje = 0;
 
 
 // Primera pintura del juego al cargar la página
-dibujarTodo();
 generarComida();
+dibujarTodo();
+actualizarPuntaje();
+
 // =========================
 // FUNCIONES DE DIBUJO
 // ========================= 
@@ -81,37 +80,76 @@ function pintarSerpiente(){
 }
 function moverDerecha() {
   let cabeza = serpiente[0];
-  let nuevaCabeza = {
-    x: cabeza.x + 1,
-    y: cabeza.y
-  };
+  let nuevaX = cabeza.x + 1;
+  let nuevaY = cabeza.y;
+  let limite = verificarLimites(nuevaX,nuevaY);
+  if(limite !== null){
+    gameOver("Intentaste salir por el borde" + limite);
+    return;
+  }
+
+  let nuevaCabeza = {x: nuevaX, y: nuevaY};
+  if(validarColision(nuevaCabeza)){
+    gameOver("Te chocaste con tu propio cuerpo");
+    return;
+  }
   serpiente.unshift(nuevaCabeza);
   serpiente.pop();
 }
 function moverIzquierda() {
   let cabeza = serpiente[0];
-  let nuevaCabeza = {
-    x: cabeza.x - 1,
-    y: cabeza.y
-  };
+  let nuevaX = cabeza.x -1;
+  let nuevaY = cabeza.y;
+
+  let limite = verificarLimites(nuevaX, nuevaY);
+  if(limite !== null){
+    gameOver("Intestaste salir por el borde" + limite);
+    return;
+  }
+
+  let nuevaCabeza = {x: nuevaX, y: nuevaY};
+  if(validarColision(nuevaCabeza)){
+    gameOver("Te chocaste con tu propio cuerpo");
+    return;
+  }
   serpiente.unshift(nuevaCabeza);
   serpiente.pop();
 }
 function moverArriba() {
   let cabeza = serpiente[0];
-  let nuevaCabeza = {
-    x: cabeza.x,
-    y: cabeza.y - 1
-  };
+  let nuevaX = cabeza.x;
+  let nuevaY = cabeza.y - 1;
+
+  let limite = verificarLimites(nuevaX, nuevaY);
+  if(limite !== null){
+    gameOver("Intentaste salir por el borde" + limite);
+    return;
+  }
+
+  let nuevaCabeza = {x: nuevaX, y: nuevaY};
+  if(validarColision(nuevaCabeza)){
+    gameOver("Te chocaste con tu propio cuerpo");
+    return;
+  }
   serpiente.unshift(nuevaCabeza);
   serpiente.pop();
 }
 function moverAbajo() {
   let cabeza = serpiente[0];
-  let nuevaCabeza = {
-    x: cabeza.x,
-    y: cabeza.y + 1
-  };
+  let nuevaX = cabeza.x;
+  let nuevaY = cabeza.y + 1;
+
+  let limite = verificarLimites(nuevaX, nuevaY);
+  if(limite !== null){
+    gameOver("Intentaste salir por el borde" + limite);
+    return;
+  }
+  let nuevaCabeza = {x: nuevaX, y: nuevaY};
+  if(validarColision(nuevaCabeza)){
+    gameOver("Chocaste con tu propio cuerpo");
+    return;
+  }
+
   serpiente.unshift(nuevaCabeza);
   serpiente.pop();
 }
@@ -126,35 +164,51 @@ function cambiarDireccion(nuevaDireccion) {
 }
 function moverSerpiente(){
   if(!juegoActivo) return;
+    let cabeza = serpiente[0];
+    let nuevaX = cabeza.x;
+    let nuevaY = cabeza.y;
+
+   if(direccionActual == "derecha") {
+       nuevaX = cabeza.x + 1;
+    }else if (direccionActual == "izquierda") {
+       nuevaX = cabeza.x - 1 ; 
+    }else if (direccionActual == "arriba") {
+       nuevaY = cabeza.y - 1;
+    }else if (direccionActual == "abajo") {
+      nuevaY = cabeza.y + 1;
+    }
+
+    let limite = verificarLimites(nuevaX, nuevaY);
+    if(limite !== null){
+      gameOver("Intentaste salir por el borde " + limite);
+      return;
+    }
+
+    let nuevaCabeza = { x: nuevaX, y: nuevaY };
+    if (validarColision(nuevaCabeza)) {
+        gameOver("Te chocaste con tu propio cuerpo");
+        return;
+    } 
+
     let cola = serpiente[serpiente.length - 1];
     let colaX = cola.x;
     let colaY = cola.y;
 
-   if(direccionActual == "derecha") {
-       moverDerecha();
-    }else if (direccionActual == "izquierda") {
-       moverIzquierda();
-    }else if (direccionActual == "arriba") {
-       moverArriba();
-    }else if (direccionActual == "abajo") {
-      moverAbajo();
-    }
-    if(atraparComida()){
-      puntaje = puntaje + 1;
+    // Mover la serpiente
+    serpiente.unshift(nuevaCabeza);
+    serpiente.pop();
 
-    let marcador = document.getElementById("puntaje");
-    if(marcador != null){
-      marcador.textContent = puntaje;
+    // Verificar si atrapó la comida
+    if (atrapaComida()) {
+        puntaje++;
+        console.log("Puntaje: " + puntaje);
+        actualizarPuntaje();
+        serpiente.push({ x: colaX, y: colaY });
+        generarComida();
     }
 
-    let ultimoSegmento = {
-      x: colaX,
-      y: colaY
-    };
-  serpiente.push(ultimoSegmento);
-  generarComida();
-  }
-  dibujarTodo();
+    // Redibujar
+    dibujarTodo();
 }
 function iniciarJuego(){
   if(intervaloSerpiente !== null){
@@ -196,14 +250,20 @@ function generarComida(){
   comida.y = randomY;
 }
 function pintarComida(){
-  pintarParte(comida.x, comida.y, "#FFA500");
+  pintarParte(comida.x, comida.y, "#FFA500","#FF7700");
 }
-function atraparComida(){
+function atrapaComida(){
   let cabeza = serpiente[0];
   if(cabeza.x == comida.x && cabeza.y == comida.y){
     return true;
   }else{
     return false;
+  }
+}
+function actualizarPuntaje() {
+  let elemento = document.getElementById("puntaje");
+    if (elemento) {
+      elemento.textContent = puntaje;
   }
 }
 function crecerSerpiente(){
@@ -213,4 +273,52 @@ function crecerSerpiente(){
     y: ultimoSegmento.y
   };
   serpiente.push(nuevoSegmento);
+}
+function validarColision(nuevaCabeza) {
+  for (let i = 1; i < serpiente.length; i++) {
+    if (serpiente[i].x === nuevaCabeza.x && serpiente[i].y === nuevaCabeza.y) {
+     return true;
+    }
+  }
+  return false;
+}
+function verificarLimites(nuevaX,nuevaY){
+  let columnas = canvas.width / TAMANIO_CELDA;
+  let filas = canvas.height / TAMANIO_CELDA;
+
+  if(nuevaX < 0){
+    return "izquierdo";
+  }
+  if(nuevaX >= columnas){
+    return "derecho";
+  }
+  if(nuevaY < 0){
+    return "superior";
+  }
+  if(nuevaY >= filas){
+    return "inferior";
+   } 
+   return null;
+}
+function gameOver(motivo){
+  if(intervaloSerpiente !== null){
+    clearInterval(intervaloSerpiente);
+    intervaloSerpiente = null;
+  }
+  juegoActivo = false;
+  console.log("game over"+motivo);
+
+  ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    ctx.fillStyle = "#FF4444";
+    ctx.font = "bold 60px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("💀 GAME OVER", canvas.width / 2, canvas.height / 2 - 30);
+    ctx.fillStyle = "white";
+    ctx.font = "24px Arial";
+    ctx.fillText("Puntaje: " + puntaje, canvas.width / 2, canvas.height / 2 + 40);
+    
+    alert("💀 GAME OVER\n\n" + motivo + "\nPuntaje: " + puntaje); 
 }
