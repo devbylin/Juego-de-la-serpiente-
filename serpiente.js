@@ -7,15 +7,15 @@ const TAMANIO_CELDA = 25;
 const serpiente = [
   {x:12, y:8},
   {x:11, y:8},
-  {x:10, y:8},
-  {x:9, y:8},
-  {x:8, y:8}
+  {x:10, y:8}
+  
 ];
 let comida = {x: 10, y: 10};
 let intervaloSerpiente = null;
 let juegoActivo = false;
 let direccionActual = "derecha";
 let puntaje = 0;
+let velocidad = 1000;
 
 
 // Primera pintura del juego al cargar la página
@@ -164,58 +164,60 @@ function cambiarDireccion(nuevaDireccion) {
 }
 function moverSerpiente(){
   if(!juegoActivo) return;
-    let cabeza = serpiente[0];
-    let nuevaX = cabeza.x;
-    let nuevaY = cabeza.y;
+  let cabeza = serpiente[0];
+  let nuevaX = cabeza.x;
+  let nuevaY = cabeza.y;
 
-   if(direccionActual == "derecha") {
-       nuevaX = cabeza.x + 1;
-    }else if (direccionActual == "izquierda") {
-       nuevaX = cabeza.x - 1 ; 
-    }else if (direccionActual == "arriba") {
-       nuevaY = cabeza.y - 1;
-    }else if (direccionActual == "abajo") {
-      nuevaY = cabeza.y + 1;
-    }
+  if(direccionActual == "derecha") {
+    nuevaX = cabeza.x + 1;
+  }else if (direccionActual == "izquierda") {
+    nuevaX = cabeza.x - 1 ; 
+  }else if (direccionActual == "arriba") {
+    nuevaY = cabeza.y - 1;
+  }else if (direccionActual == "abajo") {
+    nuevaY = cabeza.y + 1;
+  }
 
-    let limite = verificarLimites(nuevaX, nuevaY);
-    if(limite !== null){
-      gameOver("Intentaste salir por el borde " + limite);
-      return;
-    }
+  let limite = verificarLimites(nuevaX, nuevaY);
+  if(limite !== null){
+    gameOver("Intentaste salir por el borde " + limite);
+    return;
+  }
 
-    let nuevaCabeza = { x: nuevaX, y: nuevaY };
-    if (validarColision(nuevaCabeza)) {
-        gameOver("Te chocaste con tu propio cuerpo");
-        return;
-    } 
+  let nuevaCabeza = { x: nuevaX, y: nuevaY };
+  if (validarColision(nuevaCabeza)) {
+    gameOver("Te chocaste con tu propio cuerpo");
+    return;
+  } 
 
-    let cola = serpiente[serpiente.length - 1];
-    let colaX = cola.x;
-    let colaY = cola.y;
+  let cola = serpiente[serpiente.length - 1];
+  let colaX = cola.x;
+  let colaY = cola.y;
 
-    // Mover la serpiente
-    serpiente.unshift(nuevaCabeza);
-    serpiente.pop();
+  // Mover la serpiente
+  serpiente.unshift(nuevaCabeza);
+  serpiente.pop();
 
-    // Verificar si atrapó la comida
-    if (atrapaComida()) {
-        puntaje++;
-        console.log("Puntaje: " + puntaje);
-        actualizarPuntaje();
-        serpiente.push({ x: colaX, y: colaY });
-        generarComida();
-    }
-
-    // Redibujar
-    dibujarTodo();
+  // Verificar si atrapó la comida
+  if(atrapaComida()){
+    puntaje++;
+    console.log("Puntaje: " + puntaje);
+    actualizarPuntaje();
+    serpiente.push({ x: colaX, y: colaY });
+    generarComida();
+  }
+  if(puntaje % 2 === 0 && velocidad > 300){
+    let nuevaVelocidad = velocidad - 20;
+    cambiarVelocidad(nuevaVelocidad);
+  }
+  dibujarTodo();
 }
 function iniciarJuego(){
   if(intervaloSerpiente !== null){
     clearInterval(intervaloSerpiente);
     intervaloSerpiente = null
   }
-  intervaloSerpiente = setInterval(moverSerpiente, 500);
+  intervaloSerpiente = setInterval(moverSerpiente, velocidad);
   juegoActivo = true;
   console.log("Juego iniciado(ID intervalo: " + intervaloSerpiente + ")");
 }
@@ -327,6 +329,7 @@ function reiniciarJuego(){
     clearInterval(intervaloSerpiente);
     intervaloSerpiente= null;
   }
+  velocidad = 1000;
   juegoActivo = false;
   direccionActual = "derecha";
   puntaje = 0;
@@ -336,9 +339,22 @@ function reiniciarJuego(){
   serpiente.push({ x: 12, y: 8 });
   serpiente.push({ x: 11, y: 8 });
   serpiente.push({ x: 10, y: 8 });
-  serpiente.push({ x: 9, y: 8 });
-  serpiente.push({ x: 8, y: 8 });
-
   generarComida();
   dibujarTodo();
+}
+function cambiarVelocidad(nuevaVelocidad){
+  if(nuevaVelocidad < 50){
+    nuevaVelocidad = 50;
+  }
+  if(nuevaVelocidad > 1000){
+    nuevaVelocidad = 1000;
+  } 
+  velocidad = nuevaVelocidad;
+  if(juegoActivo){
+    if(intervaloSerpiente !== null) {
+      clearInterval(intervaloSerpiente);
+      intervaloSerpiente = null;
+    }
+    intervaloSerpiente = setInterval(moverSerpiente, velocidad);
+  }
 }
