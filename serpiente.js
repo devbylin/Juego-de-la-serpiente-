@@ -322,3 +322,23 @@ function gameOver(motivo){
     
     alert("💀 GAME OVER\n\n" + motivo + "\nPuntaje: " + puntaje); 
 }
+function reiniciarJuego(){
+  if(intervaloSerpiente !== null){
+    clearInterval(intervaloSerpiente);
+    intervaloSerpiente= null;
+  }
+  juegoActivo = false;
+  direccionActual = "derecha";
+  puntaje = 0;
+  actualizarPuntaje();
+
+  serpiente.length = 0;
+  serpiente.push({ x: 12, y: 8 });
+  serpiente.push({ x: 11, y: 8 });
+  serpiente.push({ x: 10, y: 8 });
+  serpiente.push({ x: 9, y: 8 });
+  serpiente.push({ x: 8, y: 8 });
+
+  generarComida();
+  dibujarTodo();
+}
