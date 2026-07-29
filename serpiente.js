@@ -220,6 +220,10 @@ function iniciarJuego(){
   intervaloSerpiente = setInterval(moverSerpiente, velocidad);
   juegoActivo = true;
   console.log("Juego iniciado(ID intervalo: " + intervaloSerpiente + ")");
+
+ let mensaje = document.getElementById("mensaje");
+ mensaje.textContent = "¡Jugando!";
+ mensaje.style.color = "red";
 }
 function pausarJuego(){
   if(intervaloSerpiente !== null){
@@ -228,6 +232,9 @@ function pausarJuego(){
     juegoActivo = false;
     console.log("juego pausado");
   }
+  let mensaje = document.getElementById("mensaje");
+ mensaje.textContent = "¡Juego pausado!";
+ mensaje.style.color = "orange";
 }
 function generarComida(){
   let lineasVerticales = canvas.width / TAMANIO_CELDA;
@@ -341,6 +348,10 @@ function reiniciarJuego(){
   serpiente.push({ x: 10, y: 8 });
   generarComida();
   dibujarTodo();
+  let mensaje = document.getElementById("mensaje");
+  mensaje.textContent = "¡Juego reiniciado!";
+  mensaje.style.color = "black";
+
 }
 function cambiarVelocidad(nuevaVelocidad){
   if(nuevaVelocidad < 50){
